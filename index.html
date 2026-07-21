@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prediksi & Scanner Togel</title>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0e27;
+      --panel: rgba(10, 14, 39, 0.32);
+      --gold: #f5d742;
+      --gold-soft: rgba(245, 215, 66, 0.12);
+      --text: #f0f4ff;
+      --muted: rgba(255,255,255,0.32);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 20px;
+      background: url('https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTR6cHF0Z2l6bjZ5MnBoYTdjdDcybXlpeW91NDNtNHdwcXAwdmVjaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EETZoyWldXgJ2/giphy.gif') center/cover no-repeat fixed;
+      color: var(--text);
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 14, 39, 0.46);
+      backdrop-filter: blur(1px);
+      z-index: 0;
+    }
+
+    #stars-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .main-wrapper {
+      position: relative;
+      z-index: 1;
+      width: min(850px, 100%);
+      background: var(--panel);
+      backdrop-filter: blur(4px);
+      border-radius: 28px;
+      padding: 24px 22px 28px;
+      border: 1px solid rgba(255, 215, 0, 0.08);
+      box-shadow: 0 20px 40px rgba(0,0,0,.45);
+      max-height: 98vh;
+      overflow-y: auto;
+    }
+
+    .main-wrapper::-webkit-scrollbar { width: 4px; }
+    .main-wrapper::-webkit-scrollbar-thumb { background: rgba(255,215,0,.25); border-radius: 12px; }
+
+    .main-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--gold);
+      text-shadow: 0 0 20px rgba(245,215,66,.25);
+    }
+
+    .clock-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 16px 6px 18px;
+      border-radius: 40px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,215,0,.08);
+    }
+
+    .clock-wrapper .label-clock {
+      color: rgba(255,255,255,.32);
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .clock {
+      font-family: "Courier New", monospace;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold);
+      min-width: 72px;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .clock .seconds { color: rgba(255,255,255,.33); font-size: 0.72rem; }
+
+    .prediksi-section {
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+      padding: 16px 14px 18px;
+      border: 1px solid rgba(255,215,0,.05);
+    }
+
+    .prediksi-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .prediksi-header h2 {
+      color: var(--gold);
+      font-size: 1.18rem;
+      font-weight: 600;
+    }
+
+    .badge {
+      background: rgba(255,215,0,.08);
+      color: var(--gold);
+      padding: 4px 12px;
+      border-radius: 18px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .prediksi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .prediksi-item {
+      background: rgba(255,255,255,.05);
+      border-radius: 12px;
+      text-align: center;
+      padding: 10px 6px;
+      border: 1px solid rgba(255,255,255,.03);
+      cursor: pointer;
+      transition: .2s ease;
+      backdrop-filter: blur(2px);
+    }
+
+    .prediksi-item:hover {
+      background: rgba(255,215,0,.12);
+      transform: translateY(-1px) scale(1.03);
+      border-color: rgba(255,215,0,.25);
+    }
+
+    .prediksi-item .icon { display: block; font-size: 1.2rem; margin-bottom: 4px; }
+    .prediksi-item .label { display: block; font-size: 0.66rem; opacity: .62; }
+
+    .search-container { margin: 16px 0 12px; }
+
+    .search-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,215,0,.08);
+      border-radius: 60px;
+      padding: 6px 6px 6px 18px;
+    }
+
+    .search-box:focus-within { border-color: var(--gold); box-shadow: 0 0 18px rgba(255,215,0,.06); }
+    .search-box .icon { opacity: 0.35; font-size: 1rem; }
+
+    .search-box input {
+      flex: 1;
+      min-width: 0;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--text);
+      padding: 11px 0;
+      font-size: 0.95rem;
+    }
+
+    .search-box input::placeholder { color: rgba(255,255,255,.22); }
+
+    .search-box button,
+    .btn-prediksi,
+    .scanner-actions button {
+      border: none;
+      cursor: pointer;
+      transition: .25s ease;
+      font-weight: 700;
+    }
+
+    .search-box button {
+      background: linear-gradient(135deg, #f5d742, #e8b81a);
+      color: #0a0e27;
+      padding: 10px 22px;
+      border-radius: 40px;
+    }
+
+    .search-box button:hover,
+    .btn-prediksi:hover,
+    .scanner-actions .btn-scan:hover { transform: scale(1.03); }
+
+    .info-status {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      padding: 0 2px;
+      font-size: 0.72rem;
+      color: rgba(255,255,255,.24);
+    }
+
+    .info-status .total span { color: var(--gold); font-weight: 700; }
+
+    .btn-prediksi {
+      background: rgba(255,215,0,.06);
+      color: var(--gold);
+      padding: 8px 18px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,215,0,.12);
+      width: 100%;
+      max-width: 250px;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .prediksi-wrapper { display: none; margin-top: 12px; }
+    .prediksi-wrapper.visible { display: block; animation: fadeSlide .25s ease; }
+
+    .tabel-prediksi {
+      width: 100%;
+      border-collapse: collapse;
+      color: var(--text);
+      font-size: 0.84rem;
+    }
+
+    .tabel-prediksi th {
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,215,0,.08);
+      color: rgba(255,255,255,.32);
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+    }
+
+    .tabel-prediksi td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.03);
+      vertical-align: top;
+      cursor: pointer;
+    }
+
+    .tabel-prediksi tr:hover td { background: rgba(255,215,0,.04); }
+    .tabel-prediksi .no-data { text-align: center; color: rgba(255,255,255,.16); padding: 20px; }
+    .nama-pasaran { color: var(--gold); font-weight: 600; }
+    .isi-prediksi {
+      max-width: 220px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      color: rgba(255,255,255,.75);
+    }
+    .update-time { font-size: 0.72rem; color: rgba(255,255,255,.26); }
+
+    .tabel-prediksi-info {
+      margin-top: 8px;
+      text-align: right;
+      color: rgba(255,255,255,.18);
+      font-size: 0.72rem;
+    }
+
+    .prediksi-detail {
+      display: none;
+      margin-top: 16px;
+      background: rgba(255,255,255,.04);
+      border-radius: 16px;
+      padding: 18px 20px;
+      border: 1px solid rgba(255,215,0,.06);
+    }
+
+    .prediksi-detail.visible { display: block; animation: fadeSlide .25s ease; }
+    .header-detail { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .header-detail h3 { color: var(--gold); font-size: 1.2rem; }
+    .header-detail .update-time {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.04);
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 6px 18px;
+      padding: 10px 0;
+      border-radius: 12px;
+      background: rgba(255,255,255,.02);
+    }
+
+    .detail-item {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      padding: 6px 12px;
+      border-bottom: 1px solid rgba(255,255,255,.03);
+      font-size: 0.84rem;
+    }
+
+    .label-detail {
+      color: rgba(255,255,255,.34);
+      min-width: 92px;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+    }
+
+    .value-detail {
+      color: var(--text);
+      font-weight: 500;
+      word-break: break-word;
+    }
+
+    .value-detail.angka { color: #7ec8e3; }
+    .value-detail.bbfs,
+    .value-detail.angka-main { color: var(--gold); font-weight: 700; }
+
+    .detail-note {
+      margin-top: 14px;
+      padding-top: 12px;
+      text-align: center;
+      color: rgba(255,255,255,.16);
+      font-size: 0.75rem;
+      font-style: italic;
+      border-top: 1px solid rgba(255,215,0,.05);
+    }
+
+    .no-prediksi { text-align: center; color: rgba(255,255,255,.24); padding: 16px 0; }
+
+    .scanner-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.52);
+      backdrop-filter: blur(8px);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      padding: 18px;
+    }
+
+    .scanner-modal.open { display: flex; }
+
+    .scanner-content {
+      background: rgba(10,14,39,.74);
+      border-radius: 28px;
+      width: min(560px, 100%);
+      padding: 28px 24px;
+      border: 1px solid rgba(255,215,0,.08);
+      box-shadow: 0 30px 60px rgba(0,0,0,.58);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .scanner-content h3 {
+      text-align: center;
+      color: var(--gold);
+      margin-bottom: 8px;
+      font-size: 1.4rem;
+    }
+
+    .scanner-content .sub {
+      text-align: center;
+      margin-bottom: 16px;
+      color: rgba(255,255,255,.28);
+      font-size: 0.84rem;
+    }
+
+    .drop-area {
+      border: 2px dashed rgba(255,215,0,.14);
+      border-radius: 20px;
+      background: rgba(255,255,255,.02);
+      padding: 30px 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: .25s ease;
+    }
+
+    .drop-area:hover { border-color: var(--gold); background: rgba(255,215,0,.03); }
+    .drop-area .icon-big { display: block; font-size: 3rem; margin-bottom: 8px; opacity: .38; }
+    .drop-area p { color: rgba(255,255,255,.34); font-size: 0.9rem; }
+    .drop-area input[type="file"] { display: none; }
+
+    .preview-image {
+      display: none;
+      max-width: 100%;
+      max-height: 220px;
+      margin: 12px auto;
+      border-radius: 12px;
+      border: 1px solid rgba(255,215,0,.08);
+    }
+
+    .scan-result {
+      margin-top: 16px;
+      background: rgba(255,255,255,.03);
+      border-radius: 14px;
+      padding: 14px 16px;
+      border: 1px solid rgba(255,215,0,.05);
+      overflow-y: auto;
+      max-height: 190px;
+      white-space: pre-wrap;
+      line-height: 1.6;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .label-result {
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.16);
+      margin-bottom: 4px;
+    }
+
+    .text-result.empty { color: rgba(255,255,255,.14); font-style: italic; }
+
+    .loading-text {
+      text-align: center;
+      color: var(--gold);
+      font-size: 0.9rem;
+      padding: 10px 0 0;
+      animation: pulse 1.4s infinite;
+    }
+
+    .scanner-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 18px;
+    }
+
+    .scanner-actions button {
+      padding: 10px 20px;
+      border-radius: 40px;
+      font-size: 0.85rem;
+    }
+
+    .btn-scan {
+      background: linear-gradient(135deg, #f5d742, #e8b81a);
+      color: #0a0e27;
+    }
+
+    .btn-close-scanner {
+      background: rgba(255,255,255,.04);
+      color: rgba(255,255,255,.45);
+      border: 1px solid rgba(255,255,255,.05);
+    }
+
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(10,14,39,.72);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+
+    .loading-overlay.active { display: flex; }
+    .loading-overlay .spinner {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 3px solid rgba(255,215,0,.12);
+      border-top-color: var(--gold);
+      animation: spin .85s linear infinite;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @media (max-width: 640px) {
+      .main-wrapper { padding: 16px 12px 20px; }
+      .prediksi-grid { grid-template-columns: repeat(3, 1fr); }
+      .title { font-size: 1.4rem; }
+      .tabel-prediksi { font-size: 0.74rem; }
+      .tabel-prediksi th, .tabel-prediksi td { padding: 6px 8px; }
+      .isi-prediksi { max-width: 110px; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .label-detail { min-width: 70px; }
+    }
+
+    @media (max-width: 420px) {
+      .main-header { flex-direction: column; align-items: stretch; }
+      .clock-wrapper { justify-content: center; }
+      .prediksi-grid { grid-template-columns: repeat(2, 1fr); }
+      .search-box {
+        background: transparent;
+        border: none;
+        padding: 0;
+        flex-wrap: wrap;
+      }
+      .search-box input {
+        width: 100%;
+        padding: 12px 16px;
+        border-radius: 40px;
+        background: rgba(255,255,255,.04);
+        border: 1px solid rgba(255,215,0,.06);
+      }
+      .search-box button { width: 100%; padding: 12px; }
+      .search-box .icon { display: none; }
+      .btn-prediksi { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="spinner"></div>
+    <div class="loading-text">⏳ Mengambil data dari Google Sheets...</div>
+  </div>
+
+  <canvas id="stars-canvas"></canvas>
+
+  <div class="main-wrapper">
+    <div class="main-header">
+      <div class="title">✨ Prediksi Togel</div>
+      <div class="clock-wrapper">
+        <span class="label-clock">🕒 Jam</span>
+        <span class="clock" id="clock">--:--:--</span>
+      </div>
+    </div>
+
+    <div class="prediksi-section">
+      <div class="prediksi-header">
+        <h2>📊 Prediksi</h2>
+        <span class="badge" id="updateBadge">⏱️ Update: --:--</span>
+      </div>
+
+      <div class="prediksi-grid">
+        <div class="prediksi-item"><span class="icon">💳</span>E-Wallet<span class="label">Dompet</span></div>
+        <div class="prediksi-item"><span class="icon">🔍</span>Cari gambar<span class="label">di sini</span></div>
+        <div class="prediksi-item" id="scannerTrigger"><span class="icon">🔮</span>Symbol<span class="label">Scanner</span></div>
+        <div class="prediksi-item"><span class="icon">🧮</span>Hitung Togel<span class="label">Cek Link</span></div>
+        <div class="prediksi-item"><span class="icon">🔄</span>Seamless<span class="label">Ganti Bg</span></div>
+        <div class="prediksi-item"><span class="icon">🔄</span>Refresh<span class="label">Baru Ditambahkan</span></div>
+        <div class="prediksi-item"><span class="icon">🤖</span>Auto<span class="label">Otomatis</span></div>
+        <div class="prediksi-item"><span class="icon">🗑️</span>Hapus<span class="label">Buang</span></div>
+      </div>
+
+      <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,215,0,0.05);">
+        <div class="search-container">
+          <div class="search-box">
+            <span class="icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Cari nama pasaran atau prediksi..." autocomplete="off" />
+            <button id="searchBtn">Cari</button>
+          </div>
+          <div class="info-status">
+            <span class="total">Total: <span id="totalCount">0</span> prediksi</span>
+            <span id="resultInfo"></span>
+          </div>
+        </div>
+
+        <div style="text-align:center;">
+          <button class="btn-prediksi" id="togglePrediksiBtn">📋 Tampilkan Prediksi</button>
+        </div>
+
+        <div class="prediksi-wrapper" id="prediksiWrapper">
+          <table class="tabel-prediksi" id="tabelPrediksi">
+            <thead>
+              <tr>
+                <th style="width: 8%;">#</th>
+                <th style="width: 25%;">Nama Pasaran</th>
+                <th style="width: 52%;">Prediksi</th>
+                <th style="width: 15%;">Update</th>
+              </tr>
+            </thead>
+            <tbody id="tabelPrediksiBody">
+              <tr><td colspan="4" class="no-data">📭 Belum ada data</td></tr>
+            </tbody>
+          </table>
+          <div class="tabel-prediksi-info" id="tabelPrediksiInfo">Menampilkan 0 prediksi</div>
+        </div>
+
+        <div class="prediksi-detail" id="prediksiDetail">
+          <div class="header-detail">
+            <h3 id="detailTitle">📊 --</h3>
+            <span class="update-time" id="detailUpdate">Update: --:--</span>
+          </div>
+          <div id="detailContent">
+            <div class="no-prediksi">📭 Klik pasaran untuk melihat prediksi lengkap</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="text-align:center; color:rgba(255,255,255,.06); font-size:0.72rem; padding:8px 0;">
+      ⚡ Data diambil dari Google Sheets (sheet "PASARAN TOGEL")
+    </div>
+  </div>
+
+  <div class="scanner-modal" id="scannerModal">
+    <div class="scanner-content">
+      <h3>🔮 Symbol Scanner</h3>
+      <p class="sub">Tempelkan gambar untuk membaca teks di dalamnya</p>
+      <div class="drop-area" id="dropArea">
+        <span class="icon-big">🖼️</span>
+        <p>Klik atau seret gambar ke sini</p>
+        <input type="file" id="fileInput" accept="image/*" />
+      </div>
+      <img id="previewImage" class="preview-image" alt="Preview" />
+      <div class="scan-result" id="scanResult">
+        <div class="label-result">📄 Hasil Scan</div>
+        <div class="text-result empty" id="resultText">Belum ada gambar diproses</div>
+      </div>
+      <div id="loadingIndicator" class="loading-text" style="display:none;">⏳ Membaca teks dari gambar...</div>
+      <div class="scanner-actions">
+        <button class="btn-close-scanner" id="closeScanner">Tutup</button>
+        <button class="btn-scan" id="scanButton">🔍 Scan Ulang</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const SHEETS_API_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+
+    const DEFAULT_DATA = [
+      "POIPET19", "POIPET22", "POIPET12", "POIPET15", "PCSO",
+      "HUAHIN2100", "HUAHIN0100", "HUAHIN1630",
+      "CHELSEA21", "CHELSEA11", "CHELSEA15", "CHELSEA19",
+      "NEVADA", "BRUNEI21", "BRUNEI 02", "BRUNEI14",
+      "TOTO MACAU MALAM 2", "TOTO MACAU MALAM 3",
+      "TOTO MACAU PAGI", "TOTO MACAU SIANG", "TOTO MACAU SORE",
+      "TOTO MACAU MALAM 1", "HONGKONG",
+      "KENTUCKY MIDDAY", "KENTUCKY EVENING",
+      "FLORIDA MIDDAY", "FLORIDA EVENING",
+      "BANGKOK 0130", "BANGKOK 0930",
+      "NEW YORK MIDDAY", "NEW YORK EVENING",
+      "NORTH CAROLINA DAY",
+      "OREGON 03", "OREGON 06", "OREGON 09", "OREGON 12",
+      "CALIFORNIA", "CAROLINA EVENING",
+      "TOTO CAMBODIA LIVE", "BULLSEYE",
+      "SYDNEY", "SINGAPORE", "MAGNUM4D",
+      "TOTOMALI1530", "TOTOMALI2030", "TOTOMALI2330",
+      "KING KONG 4D SORE", "KING KONG 4D MALAM",
+      "HOKI DRAW POOLS", "NEWYORKEVE"
+    ];
+
+    const STATIC_PREDIKSI = {
+      MAGNUM4D: { tanggal: "Rabu, 22 Juli 2026", bbfs: "1265468", angka_main: "36432", "4d": ["6880", "3790", "5755", "9219", "4806"], "3d": ["983", "968", "385", "399", "524"], "2d": ["33", "30", "52", "11", "40", "84", "18", "58", "75", "99"], colok_bebas: "1 / 6", colok_bebas_2d: "15 / 65 / 75", shio: "KELINCI / AYAM / KAMBING", twin: "21 / 22 / 81", note: "Selalu Utamakan Prediksi Sendiri" },
+      NEWYORKEVE: { tanggal: "Selasa, 21 Juli 2026", bbfs: "1370652", angka_main: "34098", "4d": ["3468", "2703", "7041", "8371", "2690"], "3d": ["314", "475", "031", "791", "235"], "2d": ["90", "15", "10", "36", "40", "78", "23", "45", "67", "89"], colok_bebas: "4 / 0", colok_bebas_2d: "51 / 47", shio: "Kelinci / Kuda / Anjing", twin: "11 / 77 / 33", note: "Selalu Utamakan Prediksi Sendiri" },
+      "BRUNEI 02": { tanggal: "22 July 2026", bbfs: "2695170", angka_main: "12597", "4d": ["3064", "0638", "4158", "8563"], "3d": ["725", "944", "253", "660"], "2d": ["37", "41", "10", "18", "40", "74", "15", "04", "43", "57"], colok_bebas: "0 / 1", colok_bebas_2d: "14 / 68 / 61", shio: "NAGA / TIKUS / NAGA", twin: "22 / 44 / 22", note: "Selalu Utamakan Prediksi Sendiri" },
+      HUAHIN0100: { tanggal: "21 July 2026", bbfs: "1577469", angka_main: "24316", "4d": ["9531", "4622", "1252", "2600"], "3d": ["482", "151", "883", "613"], "2d": ["33", "02", "56", "38", "16", "87", "29", "99", "44", "61"], colok_bebas: "3 / 9", colok_bebas_2d: "18 / 40 / 74", shio: "KAMBING / KERBAU / KUDA", twin: "44 / 22 / 88", note: "Selalu Utamakan Prediksi Sendiri" },
+      "TOTO MACAU PAGI": { tanggal: "21 July 2026", bbfs: "9876543", angka_main: "87654", "4d": ["8765", "4321", "9876", "5432"], "3d": ["876", "543", "210", "987"], "2d": ["87", "65", "43", "21", "09", "88", "77", "66", "55", "44"], colok_bebas: "8 / 6", colok_bebas_2d: "10 / 20 / 30", shio: "KERBAU / MACAN / KELINCI", twin: "88 / 77 / 66", note: "Prediksi dari analisa statistik" },
+      HONGKONG: { tanggal: "21 July 2026", bbfs: "1234567", angka_main: "56789", "4d": ["1111", "2222", "3333", "4444"], "3d": ["123", "456", "789", "012"], "2d": ["12", "34", "56", "78", "90", "11", "22", "33", "44", "55"], colok_bebas: "5 / 7", colok_bebas_2d: "12 / 34 / 56", shio: "KUDA / KERBAU / TIKUS", twin: "11 / 22 / 33", note: "Prediksi berdasarkan pola terbaru" }
+    };
+
+    function generatePrediksiDetail(nama) {
+      let hash = 0;
+      for (let i = 0; i < nama.length; i++) {
+        hash = ((hash << 5) - hash) + nama.charCodeAt(i);
+        hash = hash & hash;
+      }
+      hash = Math.abs(hash);
+
+      function rng(min, max) {
+        hash = (hash * 9301 + 49297) % 233280;
+        return Math.floor((hash / 233280) * (max - min + 1)) + min;
+      }
+
+      function digit() { return rng(0, 9); }
+      function angka(digits) {
+        let result = "";
+        for (let i = 0; i < digits; i++) result += digit();
+        return result;
+      }
+      function arr(count, digits) {
+        const out = [];
+        const seen = new Set();
+        for (let i = 0; i < count; i++) {
+          let value = "";
+          let attempts = 0;
+          do {
+            value = angka(digits);
+            attempts++;
+          } while (seen.has(value) && attempts < 50);
+          seen.add(value);
+          out.push(value);
+        }
+        return out;
+      }
+
+      const now = new Date();
+      const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+      const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+      const shioList = ["TIKUS", "KERBAU", "MACAN", "KELINCI", "NAGA", "ULAR", "KUDA", "KAMBING", "MONYET", "AYAM", "ANJING", "BABI"];
+
+      function sampleDifferent(arrPool) {
+        const picked = [];
+        while (picked.length < 3) {
+          const val = arrPool[rng(0, arrPool.length - 1)];
+          if (!picked.includes(val)) picked.push(val);
+        }
+        return picked;
+      }
+
+      const shio = sampleDifferent(shioList).join(" / ");
+      const colok = `${rng(0, 9)} / ${rng(0, 9)}`;
+      const colok2d = `${rng(10, 99)} / ${rng(10, 99)} / ${rng(10, 99)}`;
+      const twin = `${rng(10, 99)} / ${rng(10, 99)} / ${rng(10, 99)}`;
+
+      return {
+        tanggal: `${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`,
+        bbfs: angka(7),
+        angka_main: angka(5),
+        "4d": arr(5, 4),
+        "3d": arr(5, 3),
+        "2d": arr(10, 2),
+        colok_bebas: colok,
+        colok_bebas_2d: colok2d,
+        shio,
+        twin,
+        note: "Selalu Utamakan Prediksi Sendiri"
+      };
+    }
+
+    function getPrediksiDetail(nama) {
+      const key = Object.keys(STATIC_PREDIKSI).find(k => k.toLowerCase() === nama.toLowerCase());
+      if (key) return STATIC_PREDIKSI[key];
+      return generatePrediksiDetail(nama);
+    }
+
+    let marketData = [...DEFAULT_DATA];
+    let prediksiData = {};
+    let semuaCatatan = [];
+    let currentImageFile = null;
+    let prediksiVisible = false;
+
+    const totalSpan = document.getElementById('totalCount');
+    const resultInfo = document.getElementById('resultInfo');
+    const searchInput = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const detailDiv = document.getElementById('prediksiDetail');
+    const detailTitle = document.getElementById('detailTitle');
+    const detailUpdate = document.getElementById('detailUpdate');
+    const detailContent = document.getElementById('detailContent');
+    const updateBadge = document.getElementById('updateBadge');
+    const clockEl = document.getElementById('clock');
+    const prediksiWrapper = document.getElementById('prediksiWrapper');
+    const tabelPrediksiBody = document.getElementById('tabelPrediksiBody');
+    const tabelPrediksiInfo = document.getElementById('tabelPrediksiInfo');
+    const togglePrediksiBtn = document.getElementById('togglePrediksiBtn');
+    const modal = document.getElementById('scannerModal');
+    const trigger = document.getElementById('scannerTrigger');
+    const closeBtn = document.getElementById('closeScanner');
+    const fileInput = document.getElementById('fileInput');
+    const dropArea = document.getElementById('dropArea');
+    const previewImg = document.getElementById('previewImage');
+    const resultText = document.getElementById('resultText');
+    const scanBtn = document.getElementById('scanButton');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    function updateClock() {
+      const now = new Date();
+      const h = now.getHours().toString().padStart(2, '0');
+      const m = now.getMinutes().toString().padStart(2, '0');
+      const s = now.getSeconds().toString().padStart(2, '0');
+      clockEl.innerHTML = `${h}:${m}:<span class="seconds">${s}</span>`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    async function fetchDataFromSheets() {
+      loadingOverlay.classList.add('active');
+      try {
+        const response = await fetch(SHEETS_API_URL);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const pasaran = Array.isArray(data?.pasaran) ? data.pasaran : [];
+        const filtered = pasaran.map(item => String(item || '').trim()).filter(Boolean);
+        if (filtered.length) {
+          marketData = filtered;
+          prediksiData = data?.prediksi || {};
+          console.log('✅ Data dari Google Sheets diterima:', filtered.length);
+        } else {
+          throw new Error('Data Google Sheets belum lengkap');
+        }
+      } catch (error) {
+        console.warn('⚠️ Menggunakan fallback data statis:', error.message);
+        marketData = [...DEFAULT_DATA];
+        prediksiData = {};
+      } finally {
+        loadingOverlay.classList.remove('active');
+        updateBadgeWaktu();
+        buatCatatanDariData();
+        renderTabelPrediksi(searchInput.value);
+        totalSpan.textContent = marketData.length;
+      }
+    }
+
+    function updateBadgeWaktu() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      updateBadge.textContent = `⏱️ Update: ${timeStr}`;
+    }
+
+    function buatCatatanDariData() {
+      const now = new Date();
+      const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+      const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+      semuaCatatan = marketData.map(nama => {
+        const pred = prediksiData[nama] || (() => {
+          const detail = getPrediksiDetail(nama);
+          return `BBFS: ${detail.bbfs}, ANGKA MAIN: ${detail.angka_main}`;
+        })();
+        return { pasaran: nama, prediksi: pred, update: `${tgl} ${jam}` };
+      });
+    }
+
+    function renderTabelPrediksi(keyword = '') {
+      const lowerKeyword = keyword.trim().toLowerCase();
+      const filtered = lowerKeyword
+        ? semuaCatatan.filter(item => item.pasaran.toLowerCase().includes(lowerKeyword) || item.prediksi.toLowerCase().includes(lowerKeyword))
+        : semuaCatatan;
+
+      tabelPrediksiBody.innerHTML = '';
+      if (!filtered.length) {
+        tabelPrediksiBody.innerHTML = '<tr><td colspan="4" class="no-data">📭 Tidak ada data yang cocok</td></tr>';
+        tabelPrediksiInfo.textContent = 'Menampilkan 0 prediksi';
+        return;
+      }
+
+      filtered.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${index + 1}</td>
+          <td class="nama-pasaran">${item.pasaran}</td>
+          <td class="isi-prediksi" title="${item.prediksi}">${item.prediksi}</td>
+          <td class="update-time">${item.update}</td>
+        `;
+        tr.addEventListener('click', () => tampilkanDetailPrediksi(item.pasaran));
+        tabelPrediksiBody.appendChild(tr);
+      });
+
+      tabelPrediksiInfo.textContent = `Menampilkan ${filtered.length} dari ${semuaCatatan.length} prediksi`;
+    }
+
+    function tampilkanDetailPrediksi(nama) {
+      detailDiv.classList.add('visible');
+      detailTitle.textContent = `# ${nama}`;
+      detailUpdate.textContent = `Update: ${new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+
+      const detail = getPrediksiDetail(nama);
+      const str4d = detail['4d']?.join(' / ') || '-';
+      const str3d = detail['3d']?.join(' / ') || '-';
+      const str2d = detail['2d']?.join(' / ') || '-';
+
+      detailContent.innerHTML = `
+        <div class="detail-grid">
+          <div class="detail-item"><span class="label-detail">📅 Tanggal</span><span class="value-detail">${detail.tanggal || '-'}</span></div>
+          <div class="detail-item"><span class="label-detail">🔢 BBFS</span><span class="value-detail bbfs">${detail.bbfs || '-'}</span></div>
+          <div class="detail-item"><span class="label-detail">🎯 ANGKA MAIN</span><span class="value-detail angka-main">${detail.angka_main || '-'}</span></div>
+          <div class="detail-item"><span class="label-detail">4️⃣ 4D</span><span class="value-detail angka">${str4d}</span></div>
+          <div class="detail-item"><span class="label-detail">3️⃣ 3D</span><span class="value-detail angka">${str3d}</span></div>
+          <div class="detail-item"><span class="label-detail">2️⃣ 2D</span><span class="value-detail angka">${str2d}</span></div>
+          <div class="detail-item"><span class="label-detail">🎲 COLOK BEBAS</span><span class="value-detail">${detail.colok_bebas || '-'}</span></div>
+          <div class="detail-item"><span class="label-detail">🎲 COLOK BEBAS 2D</span><span class="value-detail">${detail.colok_bebas_2d || '-'}</span></div>
+          <div class="detail-item"><span class="label-detail">🐉 SHIO</span><span class="value-detail">${detail.shio || '-'}</span></div>
+          <div class="detail-item"><span class="label-detail">👯 TWIN</span><span class="value-detail">${detail.twin || '-'}</span></div>
+        </div>
+        <div class="detail-note">💡 ${detail.note || 'Selalu Utamakan Prediksi Sendiri'}</div>
+      `;
+
+      detailDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function performSearch() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      renderTabelPrediksi(keyword);
+      const filtered = semuaCatatan.filter(item => item.pasaran.toLowerCase().includes(keyword) || item.prediksi.toLowerCase().includes(keyword));
+      totalSpan.textContent = marketData.length;
+      resultInfo.textContent = keyword ? `Menampilkan ${filtered.length} dari ${semuaCatatan.length}` : '';
+      detailDiv.classList.remove('visible');
+    }
+
+    searchBtn.addEventListener('click', performSearch);
+    searchInput.addEventListener('keyup', event => {
+      if (event.key === 'Enter') performSearch();
+    });
+
+    togglePrediksiBtn.addEventListener('click', function() {
+      prediksiVisible = !prediksiVisible;
+      if (prediksiVisible) {
+        prediksiWrapper.classList.add('visible');
+        this.textContent = '📋 Sembunyikan Prediksi';
+        renderTabelPrediksi(searchInput.value);
+      } else {
+        prediksiWrapper.classList.remove('visible');
+        this.textContent = '📋 Tampilkan Prediksi';
+      }
+    });
+
+    trigger.addEventListener('click', () => {
+      modal.classList.add('open');
+      previewImg.style.display = 'none';
+      resultText.textContent = 'Belum ada gambar diproses';
+      resultText.className = 'text-result empty';
+      loadingIndicator.style.display = 'none';
+      currentImageFile = null;
+      fileInput.value = '';
+    });
+
+    function closeModal() { modal.classList.remove('open'); }
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', event => {
+      if (event.target === modal) closeModal();
+    });
+
+    dropArea.addEventListener('click', () => fileInput.click());
+    dropArea.addEventListener('dragover', event => {
+      event.preventDefault();
+      dropArea.style.borderColor = '#f5d742';
+    });
+    dropArea.addEventListener('dragleave', () => { dropArea.style.borderColor = 'rgba(255,215,0,0.14)'; });
+    dropArea.addEventListener('drop', event => {
+      event.preventDefault();
+      dropArea.style.borderColor = 'rgba(255,215,0,0.14)';
+      const file = event.dataTransfer.files[0];
+      if (file && file.type.startsWith('image/')) handleImageFile(file);
+      else alert('Mohon pilih file gambar.');
+    });
+
+    fileInput.addEventListener('change', event => {
+      const file = event.target.files[0];
+      if (file) handleImageFile(file);
+    });
+
+    function handleImageFile(file) {
+      currentImageFile = file;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImg.src = e.target.result;
+        previewImg.style.display = 'block';
+        resultText.textContent = 'Gambar siap diproses. Klik "Scan Ulang" untuk membaca teks.';
+        resultText.className = 'text-result';
+      };
+      reader.readAsDataURL(file);
+      performOCR(file);
+    }
+
+    async function performOCR(file) {
+      if (!file) { alert('Pilih gambar terlebih dahulu.'); return; }
+      loadingIndicator.style.display = 'block';
+      resultText.textContent = 'Memproses...';
+      resultText.className = 'text-result';
+
+      let imageUrl = null;
+      try {
+        imageUrl = URL.createObjectURL(file);
+        const result = await Tesseract.recognize(imageUrl, 'ind+eng', {
+          logger: () => {}
+        });
+        const text = result?.data?.text?.trim();
+        resultText.textContent = text || 'Tidak ada teks yang terdeteksi.';
+        resultText.className = text ? 'text-result' : 'text-result empty';
+      } catch (err) {
+        console.error(err);
+        resultText.textContent = 'Gagal membaca gambar: ' + err.message;
+        resultText.className = 'text-result empty';
+      } finally {
+        loadingIndicator.style.display = 'none';
+        if (imageUrl) URL.revokeObjectURL(imageUrl);
+      }
+    }
+
+    scanBtn.addEventListener('click', () => {
+      if (currentImageFile) performOCR(currentImageFile);
+      else alert('Pilih gambar terlebih dahulu dengan mengklik area di atas.');
+    });
+
+    (function () {
+      const canvas = document.getElementById('stars-canvas');
+      const ctx = canvas.getContext('2d');
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      const fixedStars = [];
+      for (let i = 0; i < 200; i++) {
+        fixedStars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5 + 0.25,
+          brightness: Math.random() * 0.7 + 0.2,
+          twinkleSpeed: Math.random() * 0.025 + 0.005,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+
+      const shootingStars = [];
+      function resetShootingStar(star) {
+        const angle = Math.random() * Math.PI * 0.7 + 0.15;
+        const speed = Math.random() * 6 + 4;
+        star.x = Math.random() * canvas.width * 0.9 + canvas.width * 0.05;
+        star.y = Math.random() * canvas.height * 0.3;
+        star.vx = Math.cos(angle) * speed;
+        star.vy = Math.sin(angle) * speed;
+        star.length = Math.random() * 70 + 30;
+        star.opacity = Math.random() * 0.7 + 0.3;
+        star.life = Math.random() * 0.8 + 0.2;
+        star.decay = Math.random() * 0.01 + 0.005;
+      }
+
+      for (let i = 0; i < 4; i++) {
+        const star = { x: 0, y: 0, vx: 0, vy: 0, length: 0, opacity: 0, life: 0, decay: 0 };
+        resetShootingStar(star);
+        shootingStars.push(star);
+      }
+
+      function drawStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const time = Date.now() / 1000;
+
+        fixedStars.forEach(s => {
+          const flicker = 0.6 + 0.4 * Math.sin(time * s.twinkleSpeed + s.phase);
+          const alpha = s.brightness * flicker;
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,240,${alpha})`;
+          ctx.fill();
+          if (s.radius > 1) {
+            ctx.shadowColor = 'rgba(255,235,180,0.16)';
+            ctx.shadowBlur = 6;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+          }
+        });
+
+        if (shootingStars.length < 8 && Math.random() < 0.02) {
+          const star = { x: 0, y: 0, vx: 0, vy: 0, length: 0, opacity: 0, life: 0, decay: 0 };
+          resetShootingStar(star);
+          shootingStars.push(star);
+        }
+
+        for (let i = shootingStars.length - 1; i >= 0; i--) {
+          const s = shootingStars[i];
+          s.x += s.vx;
+          s.y += s.vy;
+          s.life -= s.decay;
+
+          if (s.life <= 0 || s.x > canvas.width + 100 || s.y > canvas.height + 100 || s.x < -100 || s.y < -100) {
+            resetShootingStar(s);
+            continue;
+          }
+
+          const currentOpacity = s.opacity * s.life;
+          const endX = s.x - s.vx * s.length * 0.3;
+          const endY = s.y - s.vy * s.length * 0.3;
+          const gradient = ctx.createLinearGradient(s.x, s.y, endX, endY);
+          gradient.addColorStop(0, `rgba(255,255,240,${currentOpacity})`);
+          gradient.addColorStop(0.4, `rgba(255,210,140,${currentOpacity * 0.7})`);
+          gradient.addColorStop(1, `rgba(255,200,100,0)`);
+
+          ctx.beginPath();
+          ctx.moveTo(s.x, s.y);
+          ctx.lineTo(endX, endY);
+          ctx.strokeStyle = gradient;
+          ctx.lineWidth = 1.8;
+          ctx.shadowColor = `rgba(255,215,120,${currentOpacity * 0.2})`;
+          ctx.shadowBlur = 20;
+          ctx.stroke();
+          ctx.shadowBlur = 0;
+
+          ctx.beginPath();
+          ctx.arc(s.x, s.y, 1.2, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(255,255,235,${currentOpacity * 0.8})`;
+          ctx.fill();
+        }
+
+        requestAnimationFrame(drawStars);
+      }
+
+      drawStars();
+    })();
+
+    async function init() {
+      await fetchDataFromSheets();
+      totalSpan.textContent = marketData.length;
+      console.log('✅ Aplikasi siap. Total pasaran:', marketData.length);
+    }
+
+    init();
+  </script>
+</body>
+</html>
