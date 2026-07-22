@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi & Scanner Togel</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js">
+    </script>
+    <style>
+        /* ===== RESET & GLOBAL ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            background-image: url('https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExYW83Y3lvNWhvcG44NmpheGE1MzF3dHBtNW54c3ZhcjY4bnYyOHdhMiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/tgXTWnxCM4N5RYber1/giphy.gif');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        /* ===== CANVAS BINTANG JATUH ===== */
+        #stars-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.45);
+            backdrop-filter: blur(1px);
+            -webkit-backdrop-filter: blur(1px);
+            z-index: 0;
+        }
+
+        /* ===== CONTAINER UTAMA ===== */
+        .main-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 850px;
+            background: rgba(10, 14, 39, 0.25);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            border-radius: 28px;
+            padding: 24px 22px 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.08);
+            max-height: 98vh;
+            overflow-y: auto;
+        }
+
+        .main-wrapper::-webkit-scrollbar {
+            width: 4px;
+        }
+        .main-wrapper::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .main-wrapper::-webkit-scrollbar-thumb {
+            background: rgba(255, 215, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        /* ===== HEADER ===== */
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #f5e56b;
+            text-shadow: 0 0 20px rgba(245, 215, 66, 0.25), 0 0 60px rgba(245, 215, 66, 0.1);
+        }
+
+        /* ===== JAM REAL-TIME ===== */
+        .clock-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 6px 16px 6px 18px;
+            border-radius: 40px;
+            border: 1px solid rgba(255, 215, 0, 0.08);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+
+        .clock-wrapper .label-clock {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .clock {
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #f5d742;
+            text-shadow: 0 0 15px rgba(245, 215, 66, 0.15);
+            min-width: 70px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .clock .seconds {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.7rem;
+        }
+
+        /* ===== PREDIKSI ===== */
+        .prediksi-section {
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 16px 14px 18px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+
+        .prediksi-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .prediksi-header h2 {
+            color: #f5d742;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 15px rgba(245, 215, 66, 0.1);
+        }
+
+        .prediksi-header .badge {
+            background: rgba(255, 215, 0, 0.08);
+            padding: 4px 14px;
+            border-radius: 30px;
+            color: #f5d742;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 215, 0, 0.08);
+        }
+
+        .prediksi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .prediksi-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px 6px;
+            border-radius: 12px;
+            text-align: center;
+            color: #f0f4ff;
+            font-size: 0.8rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: 0.2s;
+            cursor: pointer;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+
+        .prediksi-item:hover {
+            background: rgba(255, 215, 0, 0.12);
+            border-color: rgba(255, 215, 0, 0.2);
+            transform: scale(1.03);
+        }
+
+        .prediksi-item .icon {
+            display: block;
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .prediksi-item .label {
+            font-size: 0.65rem;
+            opacity: 0.6;
+        }
+
+        /* ===== SEARCH ===== */
+        .search-container {
+            margin-bottom: 12px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 60px;
+            padding: 6px 6px 6px 20px;
+            border: 1px solid rgba(255, 215, 0, 0.08);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            transition: 0.3s;
+        }
+
+        .search-box:focus-within {
+            border-color: #f5d742;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.04);
+        }
+
+        .search-box .icon {
+            font-size: 1.1rem;
+            opacity: 0.3;
+            margin-right: 10px;
+        }
+
+        .search-box input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #f0f4ff;
+            font-size: 0.95rem;
+            padding: 12px 0;
+            min-width: 0;
+        }
+
+        .search-box input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+            font-weight: 300;
+        }
+
+        .search-box button {
+            background: linear-gradient(135deg, #f5d742, #e8b81a);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 22px;
+            color: #0a0e27;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(245, 215, 66, 0.1);
+        }
+
+        .search-box button:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 20px rgba(245, 215, 66, 0.2);
+        }
+
+        .search-box button:active {
+            transform: scale(0.96);
+        }
+
+        .info-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.2);
+            padding: 0 6px;
+        }
+
+        .info-status .total {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .info-status .total span {
+            color: #f5d742;
+            font-weight: 600;
+        }
+
+        .no-result {
+            text-align: center;
+            padding: 20px 10px;
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 0.85rem;
+        }
+
+        /* ===== WRAPPER PREDIKSI ===== */
+        .prediksi-wrapper {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .prediksi-wrapper.visible {
+            display: block;
+            animation: fadeSlide 0.3s ease;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== TABEL PREDIKSI ===== */
+        .tabel-prediksi {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            color: #f0f4ff;
+        }
+
+        .tabel-prediksi th {
+            text-align: left;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.08);
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 500;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .tabel-prediksi td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            vertical-align: top;
+            cursor: pointer;
+        }
+
+        .tabel-prediksi tr:hover td {
+            background: rgba(255, 215, 0, 0.04);
+        }
+
+        .tabel-prediksi .no-data {
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        .tabel-prediksi .nama-pasaran {
+            color: #f5d742;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+
+        .tabel-prediksi .isi-prediksi {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+
+        .tabel-prediksi .update-time {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .tabel-prediksi-info {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* ===== TOMBOL PREDIKSI ===== */
+        .btn-prediksi {
+            background: rgba(255, 215, 0, 0.06);
+            border: 1px solid rgba(255, 215, 0, 0.08);
+            color: #f5d742;
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: 500;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            margin-top: 10px;
+            width: 100%;
+            max-width: 250px;
+            display: inline-block;
+        }
+
+        .btn-prediksi:hover {
+            background: rgba(255, 215, 0, 0.12);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.05);
+        }
+
+        .btn-prediksi:active {
+            transform: scale(0.96);
+        }
+
+        /* ===== DETAIL PREDIKSI (1 STICKY NOTES) ===== */
+        .prediksi-detail {
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 16px;
+            padding: 16px 18px;
+            border: 1px solid rgba(255, 215, 0, 0.06);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            display: none;
+        }
+
+        .prediksi-detail.visible {
+            display: block;
+            animation: fadeSlide 0.3s ease;
+        }
+
+        .prediksi-detail .header-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .prediksi-detail .header-detail h3 {
+            color: #f5d742;
+            font-size: 1.15rem;
+            font-weight: 600;
+            text-shadow: 0 0 10px rgba(245, 215, 66, 0.1);
+        }
+
+        .prediksi-detail .header-detail .update-time {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.7rem;
+        }
+
+        /* Tombol Action (Copy & Close) */
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 215, 0, 0.12);
+            color: #f0f4ff;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 215, 0, 0.08);
+            border-color: rgba(255, 215, 0, 0.2);
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.03);
+        }
+
+        .btn-action:active {
+            transform: scale(0.95);
+        }
+
+        .btn-copy {
+            color: #f5d742;
+        }
+        .btn-copy.copied {
+            background: rgba(46, 204, 113, 0.15);
+            border-color: #2ecc71;
+            color: #2ecc71;
+        }
+
+        .btn-close {
+            color: rgba(255, 100, 100, 0.6);
+            border-color: rgba(255, 100, 100, 0.15);
+        }
+        .btn-close:hover {
+            background: rgba(255, 100, 100, 0.1);
+            border-color: rgba(255, 100, 100, 0.3);
+            color: #ff6b6b;
+        }
+
+        /* ===== 1 STICKY NOTE BESAR ===== */
+        .sticky-note-besar {
+            background: #fef9e7;
+            padding: 20px 22px 18px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+            position: relative;
+            border-left: 6px solid #f5d742;
+            backdrop-filter: blur(1px);
+            -webkit-backdrop-filter: blur(1px);
+            transform: rotate(-0.5deg);
+            transition: 0.25s ease;
+            margin-top: 4px;
+        }
+
+        .sticky-note-besar:hover {
+            transform: rotate(0deg) scale(1.005);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Pin di sudut */
+        .sticky-note-besar::before {
+            content: "📌";
+            position: absolute;
+            top: -10px;
+            right: 16px;
+            font-size: 1.5rem;
+            opacity: 0.5;
+            transform: rotate(20deg);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+        }
+
+        .sticky-note-besar .note-row {
+            display: flex;
+            align-items: baseline;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .sticky-note-besar .note-row:last-of-type {
+            border-bottom: none;
+        }
+
+        .sticky-note-besar .note-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: rgba(0, 0, 0, 0.3);
+            min-width: 100px;
+            flex-shrink: 0;
+        }
+
+        .sticky-note-besar .note-value {
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #1a1a2e;
+            word-break: break-word;
+            flex: 1;
+        }
+
+        .sticky-note-besar .note-value.angka {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 0.5px;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+        .sticky-note-besar .note-value.bbfs {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #b7950b;
+        }
+
+        .sticky-note-besar .note-value.main {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #d35400;
+        }
+
+        .sticky-note-besar .note-note {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0, 0, 0, 0.06);
+            text-align: center;
+            font-style: italic;
+            color: rgba(0, 0, 0, 0.35);
+            font-size: 0.8rem;
+        }
+
+        .no-prediksi {
+            color: rgba(255, 255, 255, 0.25);
+            text-align: center;
+            padding: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        /* ===== MODAL SCANNER ===== */
+        .scanner-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .scanner-modal.open {
+            display: flex;
+        }
+
+        .scanner-content {
+            background: rgba(10, 14, 39, 0.70);
+            border-radius: 28px;
+            padding: 30px 28px;
+            max-width: 560px;
+            width: 100%;
+            border: 1px solid rgba(255, 215, 0, 0.08);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .scanner-content h3 {
+            color: #f5d742;
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(245, 215, 66, 0.1);
+        }
+
+        .scanner-content .sub {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .drop-area {
+            border: 2px dashed rgba(255, 215, 0, 0.12);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .drop-area:hover {
+            border-color: #f5d742;
+            background: rgba(255, 215, 0, 0.03);
+        }
+
+        .drop-area .icon-big {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 8px;
+            opacity: 0.4;
+        }
+
+        .drop-area p {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 0.9rem;
+        }
+
+        .drop-area input[type="file"] {
+            display: none;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 12px;
+            margin: 10px auto;
+            display: block;
+            border: 1px solid rgba(255, 215, 0, 0.06);
+        }
+
+        .scan-result {
+            margin-top: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 14px 16px;
+            border: 1px solid rgba(255, 215, 0, 0.04);
+            color: #f0f4ff;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .scan-result .label-result {
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 4px;
+        }
+
+        .scan-result .text-result {
+            color: #f0f4ff;
+        }
+
+        .scan-result .text-result.empty {
+            color: rgba(255, 255, 255, 0.15);
+            font-style: italic;
+        }
+
+        .scanner-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+
+        .scanner-actions button {
+            padding: 10px 24px;
+            border-radius: 40px;
+            border: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn-scan {
+            background: linear-gradient(135deg, #f5d742, #e8b81a);
+            color: #0a0e27;
+            box-shadow: 0 4px 12px rgba(245, 215, 66, 0.1);
+        }
+
+        .btn-scan:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 20px rgba(245, 215, 66, 0.2);
+        }
+
+        .btn-close-scanner {
+            background: rgba(255, 255, 255, 0.04);
+            color: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .btn-close-scanner:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .loading-text {
+            color: #f5d742;
+            font-size: 0.9rem;
+            text-align: center;
+            padding: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* ===== LOADING OVERLAY ===== */
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 39, 0.7);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-overlay .spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 215, 0, 0.1);
+            border-top-color: #f5d742;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-overlay .loading-text {
+            color: #f5d742;
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 640px) {
+            .main-wrapper {
+                padding: 16px 12px 20px;
+            }
+            .title {
+                font-size: 1.4rem;
+            }
+            .clock-wrapper {
+                padding: 4px 12px 4px 14px;
+            }
+            .clock {
+                font-size: 0.9rem;
+                min-width: 60px;
+            }
+            .clock-wrapper .label-clock {
+                display: none;
+            }
+            .prediksi-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .scanner-content {
+                padding: 20px 16px;
+            }
+            .tabel-prediksi {
+                font-size: 0.75rem;
+            }
+            .tabel-prediksi th,
+            .tabel-prediksi td {
+                padding: 6px 8px;
+            }
+            .tabel-prediksi .isi-prediksi {
+                max-width: 100px;
+            }
+            .btn-prediksi {
+                max-width: 100%;
+            }
+            .sticky-note-besar {
+                padding: 14px 16px 12px;
+            }
+            .sticky-note-besar .note-label {
+                min-width: 70px;
+                font-size: 0.55rem;
+            }
+            .sticky-note-besar .note-value {
+                font-size: 0.8rem;
+            }
+            .sticky-note-besar .note-value.bbfs,
+            .sticky-note-besar .note-value.main {
+                font-size: 0.9rem;
+            }
+            .sticky-note-besar::before {
+                font-size: 1.2rem;
+                top: -8px;
+                right: 10px;
+            }
+            .btn-action {
+                font-size: 0.6rem;
+                padding: 3px 10px;
+            }
+            .action-buttons {
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .main-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .clock-wrapper {
+                justify-content: center;
+            }
+            .prediksi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .title {
+                font-size: 1.2rem;
+                text-align: center;
+            }
+            .search-box {
+                flex-wrap: wrap;
+                background: transparent;
+                border: none;
+                padding: 0;
+                gap: 8px;
+            }
+            .search-box input {
+                background: rgba(255, 255, 255, 0.04);
+                border-radius: 60px;
+                padding: 12px 18px;
+                border: 1px solid rgba(255, 215, 0, 0.06);
+                width: 100%;
+            }
+            .search-box button {
+                width: 100%;
+                justify-content: center;
+                padding: 12px;
+            }
+            .search-box .icon {
+                display: none;
+            }
+            .tabel-prediksi .isi-prediksi {
+                max-width: 80px;
+            }
+            .btn-prediksi {
+                max-width: 100%;
+            }
+            .sticky-note-besar {
+                padding: 10px 12px 10px;
+            }
+            .sticky-note-besar .note-label {
+                min-width: 55px;
+                font-size: 0.5rem;
+            }
+            .sticky-note-besar .note-value {
+                font-size: 0.7rem;
+            }
+            .sticky-note-besar .note-value.bbfs,
+            .sticky-note-besar .note-value.main {
+                font-size: 0.8rem;
+            }
+            .sticky-note-besar::before {
+                font-size: 1rem;
+                top: -6px;
+                right: 6px;
+            }
+            .btn-action {
+                font-size: 0.55rem;
+                padding: 2px 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== LOADING OVERLAY ===== -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="loading-text">⏳ Mengambil data dari Google Sheets...</div>
+    </div>
+
+    <!-- ===== CANVAS BINTANG JATUH ===== -->
+    <canvas id="stars-canvas"></canvas>
+
+    <!-- ===== CONTAINER UTAMA ===== -->
+    <div class="main-wrapper">
+
+        <!-- ===== HEADER ===== -->
+        <div class="main-header">
+            <div class="title">✨ Prediksi Togel</div>
+            <div class="clock-wrapper">
+                <span class="label-clock">🕒 Jam</span>
+                <span class="clock" id="clock">--:--:--</span>
+            </div>
+        </div>
+
+        <!-- ===== PREDIKSI ===== -->
+        <div class="prediksi-section">
+            <div class="prediksi-header">
+                <h2>📊 Prediksi</h2>
+                <span class="badge" id="updateBadge">⏱️ Update: --:--</span>
+            </div>
+
+            <div class="prediksi-grid">
+                <div class="prediksi-item">
+                    <span class="icon">💳</span>
+                    E-Wallet
+                    <span class="label">Dompet</span>
+                </div>
+                <div class="prediksi-item">
+                    <span class="icon">🔍</span>
+                    Cari gambar
+                    <span class="label">di sini</span>
+                </div>
+                <div class="prediksi-item" id="scannerTrigger">
+                    <span class="icon">🔮</span>
+                    Symbol
+                    <span class="label">Scanner</span>
+                </div>
+                <div class="prediksi-item">
+                    <span class="icon">🧮</span>
+                    Hitung Togel
+                    <span class="label">Cek Link</span>
+                </div>
+                <div class="prediksi-item">
+                    <span class="icon">🔄</span>
+                    Seamless
+                    <span class="label">Ganti Bg</span>
+                </div>
+                <div class="prediksi-item">
+                    <span class="icon">🔄</span>
+                    Refresh
+                    <span class="label">Baru Ditambahkan</span>
+                </div>
+                <div class="prediksi-item">
+                    <span class="icon">🤖</span>
+                    Auto
+                    <span class="label">Otomatis</span>
+                </div>
+                <div class="prediksi-item">
+                    <span class="icon">🗑️</span>
+                    Hapus
+                    <span class="label">Buang</span>
+                </div>
+            </div>
+
+            <!-- ===== SEARCH & TOMBOL ===== -->
+            <div style="margin-top:16px; padding-top:16px; border-top:1px solid rgba(255,215,0,0.05);">
+
+                <!-- SEARCH BOX -->
+                <div class="search-container">
+                    <div class="search-box">
+                        <span class="icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Cari nama pasaran atau prediksi..." autocomplete="off">
+                        <button id="searchBtn">Cari</button>
+                    </div>
+                    <div class="info-status">
+                        <span class="total">Total: <span id="totalCount">0</span> prediksi</span>
+                        <span id="resultInfo" style="color: rgba(255,255,255,0.15);"></span>
+                    </div>
+                </div>
+
+                <!-- TOMBOL PREDIKSI -->
+                <div style="text-align:center;">
+                    <button class="btn-prediksi" id="togglePrediksiBtn">📋 Tampilkan Prediksi</button>
+                </div>
+
+                <!-- ===== WRAPPER PREDIKSI ===== -->
+                <div class="prediksi-wrapper" id="prediksiWrapper">
+
+                    <!-- TABEL PREDIKSI (4 kolom) -->
+                    <table class="tabel-prediksi" id="tabelPrediksi">
+                        <thead>
+                            <tr>
+                                <th style="width:8%;">#</th>
+                                <th style="width:25%;">Nama Pasaran</th>
+                                <th style="width:52%;">Prediksi</th>
+                                <th style="width:15%;">Update</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelPrediksiBody">
+                            <tr><td colspan="4" class="no-data">📭 Belum ada data</td></tr>
+                        </tbody>
+                    </table>
+                    <div class="tabel-prediksi-info">
+                        <span id="tabelPrediksiInfo">Menampilkan 0 prediksi</span>
+                    </div>
+                </div>
+
+                <!-- ===== DETAIL PREDIKSI (1 STICKY NOTES) ===== -->
+                <div class="prediksi-detail" id="prediksiDetail">
+                    <div class="header-detail">
+                        <h3 id="detailTitle">📊 --</h3>
+                        <div class="action-buttons">
+                            <span class="update-time" id="detailUpdate">Update: --:--</span>
+                            <button class="btn-action btn-copy" id="btnCopyPrediksi">📋 Copy</button>
+                            <button class="btn-action btn-close" id="btnClosePrediksi">✕ Tutup</button>
+                        </div>
+                    </div>
+                    <div id="detailContent">
+                        <div class="no-prediksi">📭 Klik pasaran untuk melihat prediksi lengkap</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align:center; color:rgba(255,255,255,0.05); font-size:0.7rem; padding:8px 0;">
+            ⚡ Data diambil dari Google Sheets (sheet "PASARAN TOGEL")
+        </div>
+    </div>
+
+    <!-- ===== MODAL SCANNER ===== -->
+    <div class="scanner-modal" id="scannerModal">
+        <div class="scanner-content">
+            <h3>🔮 Symbol Scanner</h3>
+            <p class="sub">Tempelkan gambar untuk membaca teks di dalamnya</p>
+
+            <div class="drop-area" id="dropArea">
+                <span class="icon-big">🖼️</span>
+                <p>Klik atau seret gambar ke sini</p>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+
+            <img id="previewImage" class="preview-image" style="display:none;" alt="Preview">
+
+            <div class="scan-result" id="scanResult">
+                <div class="label-result">📄 Hasil Scan</div>
+                <div class="text-result empty" id="resultText">Belum ada gambar diproses</div>
+            </div>
+
+            <div id="loadingIndicator" class="loading-text" style="display:none;">⏳ Membaca teks dari gambar...</div>
+
+            <div class="scanner-actions">
+                <button class="btn-close-scanner" id="closeScanner">Tutup</button>
+                <button class="btn-scan" id="scanButton">🔍 Scan Ulang</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // 1. KONFIGURASI
+        // ============================================================
+        const SHEETS_API_URL = "https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec";
+
+        // ============================================================
+        // 2. DATA DEFAULT (FALLBACK)
+        // ============================================================
+        const DEFAULT_DATA = [
+            "POIPET19", "POIPET22", "POIPET12", "POIPET15", "PCSO",
+            "HUAHIN2100", "HUAHIN0100", "HUAHIN1630",
+            "CHELSEA21", "CHELSEA11", "CHELSEA15", "CHELSEA19",
+            "NEVADA", "BRUNEI21", "BRUNEI 02", "BRUNEI14",
+            "TOTO MACAU MALAM 2", "TOTO MACAU MALAM 3",
+            "TOTO MACAU PAGI", "TOTO MACAU SIANG", "TOTO MACAU SORE",
+            "TOTO MACAU MALAM 1", "HONGKONG",
+            "KENTUCKY MIDDAY", "KENTUCKY EVENING",
+            "FLORIDA MIDDAY", "FLORIDA EVENING",
+            "BANGKOK 0130", "BANGKOK 0930",
+            "NEW YORK MIDDAY", "NEW YORK EVENING",
+            "NORTH CAROLINA DAY",
+            "OREGON 03", "OREGON 06", "OREGON 09", "OREGON 12",
+            "CALIFORNIA", "CAROLINA EVENING",
+            "TOTO CAMBODIA LIVE", "BULLSEYE",
+            "SYDNEY", "SINGAPORE", "MAGNUM4D",
+            "TOTOMALI1530", "TOTOMALI2030", "TOTOMALI2330",
+            "KING KONG 4D SORE", "KING KONG 4D MALAM",
+            "HOKI DRAW POOLS", "NEWYORKEVE"
+        ];
+
+        // ============================================================
+        // 3. DATA PREDIKSI STATIS (untuk beberapa pasaran contoh)
+        // ============================================================
+        const STATIC_PREDIKSI = {
+            "NEWYORKEVE": {
+                tanggal: "Selasa, 21 Juli 2026",
+                bbfs: "1370652",
+                angka_main: "34098",
+                "4d": ["3468", "2703", "7041", "8371", "2690"],
+                "3d": ["314", "475", "031", "791", "235"],
+                "2d": ["90", "15", "10", "36", "40"],
+                colok_bebas: "4 / 0",
+                colok_bebas_2d: "51 / 47",
+                twin: "11 / 77 / 33",
+                shio: "Kelinci / Kuda / Anjing",
+                note: "Selalu Utamakan Prediksi Sendiri"
+            },
+            "BRUNEI 02": {
+                tanggal: "22 July 2026",
+                bbfs: "2695170",
+                angka_main: "12597",
+                "4d": ["3064", "0638", "4158", "8563"],
+                "3d": ["725", "944", "253", "660"],
+                "2d": ["37", "41", "10", "18", "40", "74", "15", "04", "43", "57"],
+                colok_bebas: "0 / 1",
+                colok_bebas_2d: "14 / 68 / 61",
+                shio: "NAGA / TIKUS / NAGA",
+                twin: "22 / 44 / 22",
+                note: "Selalu Utamakan Prediksi Sendiri"
+            },
+            "HUAHIN0100": {
+                tanggal: "21 July 2026",
+                bbfs: "1577469",
+                angka_main: "24316",
+                "4d": ["9531", "4622", "1252", "2600"],
+                "3d": ["482", "151", "883", "613"],
+                "2d": ["33", "02", "56", "38", "16", "87", "29", "99", "44", "61"],
+                colok_bebas: "3 / 9",
+                colok_bebas_2d: "18 / 40 / 74",
+                shio: "KAMBING / KERBAU / KUDA",
+                twin: "44 / 22 / 88",
+                note: "Selalu Utamakan Prediksi Sendiri"
+            },
+            "TOTO MACAU PAGI": {
+                tanggal: "21 July 2026",
+                bbfs: "9876543",
+                angka_main: "87654",
+                "4d": ["8765", "4321", "9876", "5432"],
+                "3d": ["876", "543", "210", "987"],
+                "2d": ["87", "65", "43", "21", "09", "88", "77", "66", "55", "44"],
+                colok_bebas: "8 / 6",
+                colok_bebas_2d: "10 / 20 / 30",
+                shio: "KERBAU / MACAN / KELINCI",
+                twin: "88 / 77 / 66",
+                note: "Prediksi dari analisa statistik"
+            },
+            "HONGKONG": {
+                tanggal: "21 July 2026",
+                bbfs: "1234567",
+                angka_main: "56789",
+                "4d": ["1111", "2222", "3333", "4444"],
+                "3d": ["123", "456", "789", "012"],
+                "2d": ["12", "34", "56", "78", "90", "11", "22", "33", "44", "55"],
+                colok_bebas: "5 / 7",
+                colok_bebas_2d: "12 / 34 / 56",
+                shio: "KUDA / KERBAU / TIKUS",
+                twin: "11 / 22 / 33",
+                note: "Prediksi berdasarkan pola terbaru"
+            }
+        };
+
+        // ============================================================
+        // 4. GENERATOR PREDIKSI DINAMIS UNTUK SEMUA PASARAN
+        // ============================================================
+        function generatePrediksiDetail(nama) {
+            let hash = 0;
+            for (let i = 0; i < nama.length; i++) {
+                hash = ((hash << 5) - hash) + nama.charCodeAt(i);
+                hash = hash & hash;
+            }
+            hash = Math.abs(hash);
+
+            function rng(min, max) {
+                hash = (hash * 9301 + 49297) % 233280;
+                return Math.floor((hash / 233280) * (max - min + 1)) + min;
+            }
+
+            function rngDigit() { return rng(0, 9); }
+            function genAngka(digits) { let r = ''; for (let i = 0; i < digits; i++) r += rngDigit(); return r; }
+
+            function genArray(count, digits) {
+                let arr = [],
+                    seen = new Set();
+                for (let i = 0; i < count; i++) {
+                    let num,
+                        attempts = 0;
+                    do { num = genAngka(digits);
+                        attempts++; } while (seen.has(num) && attempts < 50);
+                    seen.add(num);
+                    arr.push(num);
+                }
+                return arr;
+            }
+
+            const shioList = ["TIKUS", "KERBAU", "MACAN", "KELINCI", "NAGA", "ULAR", "KUDA", "KAMBING", "MONYET", "AYAM",
+                "ANJING", "BABI"
+            ];
+
+            const now = new Date();
+            const hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            const bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober",
+                "November", "Desember"
+            ];
+            const tanggal = `${hari[now.getDay()]}, ${now.getDate()} ${bulan[now.getMonth()]} ${now.getFullYear()}`;
+
+            return {
+                tanggal: tanggal,
+                bbfs: genAngka(7),
+                angka_main: genAngka(5),
+                "4d": genArray(5, 4),
+                "3d": genArray(5, 3),
+                "2d": genArray(10, 2),
+                colok_bebas: `${rng(0,9)} / ${rng(0,9)}`,
+                colok_bebas_2d: `${rng(10,99)} / ${rng(10,99)} / ${rng(10,99)}`,
+                shio: `${shioList[rng(0,11)]} / ${shioList[rng(0,11)]} / ${shioList[rng(0,11)]}`,
+                twin: `${rng(10,99)} / ${rng(10,99)} / ${rng(10,99)}`,
+                note: "Selalu Utamakan Prediksi Sendiri"
+            };
+        }
+
+        // ============================================================
+        // 5. FUNGSI GET PREDIKSI DETAIL (STATIC + GENERATED)
+        // ============================================================
+        function getPrediksiDetail(nama) {
+            const key = Object.keys(STATIC_PREDIKSI).find(k => k.toLowerCase() === nama.toLowerCase());
+            if (key) return STATIC_PREDIKSI[key];
+            return generatePrediksiDetail(nama);
+        }
+
+        // ============================================================
+        // 6. STATE
+        // ============================================================
+        let marketData = [...DEFAULT_DATA];
+        let prediksiData = {};
+        let currentImageFile = null;
+        let semuaCatatan = [];
+        let prediksiVisible = false;
+        let lastPrediksiDetail = null;
+        let lastPrediksiNama = '';
+
+        // ============================================================
+        // 7. ELEMEN DOM
+        // ============================================================
+        const totalSpan = document.getElementById('totalCount');
+        const resultInfo = document.getElementById('resultInfo');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+
+        const detailDiv = document.getElementById('prediksiDetail');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailUpdate = document.getElementById('detailUpdate');
+        const detailContent = document.getElementById('detailContent');
+
+        const updateBadge = document.getElementById('updateBadge');
+        const clockEl = document.getElementById('clock');
+
+        const prediksiWrapper = document.getElementById('prediksiWrapper');
+        const tabelPrediksiBody = document.getElementById('tabelPrediksiBody');
+        const tabelPrediksiInfo = document.getElementById('tabelPrediksiInfo');
+        const togglePrediksiBtn = document.getElementById('togglePrediksiBtn');
+
+        const btnCopy = document.getElementById('btnCopyPrediksi');
+        const btnClose = document.getElementById('btnClosePrediksi');
+
+        // Modal Scanner
+        const modal = document.getElementById('scannerModal');
+        const trigger = document.getElementById('scannerTrigger');
+        const closeBtn = document.getElementById('closeScanner');
+        const fileInput = document.getElementById('fileInput');
+        const dropArea = document.getElementById('dropArea');
+        const previewImg = document.getElementById('previewImage');
+        const resultText = document.getElementById('resultText');
+        const scanBtn = document.getElementById('scanButton');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+
+        // ============================================================
+        // 8. JAM REAL-TIME
+        // ============================================================
+        function updateClock() {
+            const now = new Date();
+            const h = now.getHours().toString().padStart(2, '0');
+            const m = now.getMinutes().toString().padStart(2, '0');
+            const s = now.getSeconds().toString().padStart(2, '0');
+            clockEl.innerHTML = `${h}:${m}:<span class="seconds">${s}</span>`;
+        }
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        // ============================================================
+        // 9. FUNGSI AMBIL DATA DARI GOOGLE SHEETS
+        // ============================================================
+        async function fetchDataFromSheets() {
+            try {
+                loadingOverlay.classList.add('active');
+                const response = await fetch(SHEETS_API_URL);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const data = await response.json();
+
+                if (data && data.pasaran && Array.isArray(data.pasaran) && data.pasaran.length > 0) {
+                    marketData = data.pasaran.filter(item => item && item.trim() !== '');
+                    prediksiData = data.prediksi || {};
+                    console.log('✅ Data dari Google Sheets:', {
+                        pasaran: marketData.length,
+                        prediksi: Object.keys(prediksiData).length
+                    });
+                    return true;
+                } else {
+                    throw new Error('Data tidak lengkap');
+                }
+            } catch (error) {
+                console.warn('❌ Gagal mengambil data dari Google Sheets:', error.message);
+                marketData = [...DEFAULT_DATA];
+                prediksiData = {};
+                return false;
+            } finally {
+                loadingOverlay.classList.remove('active');
+                updateBadgeWaktu();
+                buatCatatanDariData();
+                renderTabelPrediksi('');
+                totalSpan.textContent = marketData.length;
+                resultInfo.textContent = '';
+            }
+        }
+
+        // ============================================================
+        // 10. UPDATE BADGE WAKTU
+        // ============================================================
+        function updateBadgeWaktu() {
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            updateBadge.textContent = `⏱️ Update: ${timeStr}`;
+        }
+
+        // ============================================================
+        // 11. BUAT CATATAN DARI DATA
+        // ============================================================
+        function buatCatatanDariData() {
+            semuaCatatan = [];
+            const now = new Date();
+            const tgl = now.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+            const jam = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+            marketData.forEach(nama => {
+                let pred = prediksiData[nama] || '';
+                if (!pred) {
+                    const detail = getPrediksiDetail(nama);
+                    pred = `BBFS: ${detail.bbfs}, ANGKA MAIN: ${detail.angka_main}`;
+                }
+                semuaCatatan.push({
+                    pasaran: nama,
+                    prediksi: pred,
+                    update: `${tgl} ${jam}`
+                });
+            });
+        }
+
+        // ============================================================
+        // 12. RENDER TABEL PREDIKSI
+        // ============================================================
+        function renderTabelPrediksi(keyword = '') {
+            const lowerKeyword = keyword.trim().toLowerCase();
+            let filtered = semuaCatatan;
+
+            if (lowerKeyword) {
+                filtered = semuaCatatan.filter(item =>
+                    item.pasaran.toLowerCase().includes(lowerKeyword) ||
+                    item.prediksi.toLowerCase().includes(lowerKeyword)
+                );
+            }
+
+            tabelPrediksiBody.innerHTML = '';
+            if (filtered.length === 0) {
+                tabelPrediksiBody.innerHTML =
+                    `<tr><td colspan="4" class="no-data">📭 Tidak ada data yang cocok</td></tr>`;
+                tabelPrediksiInfo.textContent = 'Menampilkan 0 prediksi';
+                return;
+            }
+
+            filtered.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td class="nama-pasaran">${item.pasaran}</td>
+                    <td class="isi-prediksi" title="${item.prediksi}">${item.prediksi}</td>
+                    <td class="update-time">${item.update}</td>
+                `;
+                tr.addEventListener('click', () => {
+                    tampilkanDetailPrediksi(item.pasaran);
+                });
+                tabelPrediksiBody.appendChild(tr);
+            });
+
+            tabelPrediksiInfo.textContent = `Menampilkan ${filtered.length} dari ${semuaCatatan.length} prediksi`;
+        }
+
+        // ============================================================
+        // 13. TAMPILKAN DETAIL PREDIKSI (1 STICKY NOTES)
+        // ============================================================
+        function tampilkanDetailPrediksi(nama) {
+            lastPrediksiNama = nama;
+            const detail = getPrediksiDetail(nama);
+            lastPrediksiDetail = detail;
+
+            detailDiv.classList.add('visible');
+            detailTitle.textContent = `📊 ${nama}`;
+
+            const now = new Date();
+            const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+            detailUpdate.textContent = `Update: ${timeStr}`;
+
+            if (detail) {
+                const str4d = detail['4d'] ? detail['4d'].join(' ') : '-';
+                const str3d = detail['3d'] ? detail['3d'].join(' ') : '-';
+                const str2d = detail['2d'] ? detail['2d'].join(' ') : '-';
+
+                const items = [
+                    { label: '📅 Tanggal', value: detail.tanggal || '-', cls: '' },
+                    { label: '🔢 BBFS', value: detail.bbfs || '-', cls: 'bbfs' },
+                    { label: '🎯 ANGKA MAIN', value: detail.angka_main || '-', cls: 'main' },
+                    { label: '4️⃣ 4D (BB)', value: str4d, cls: 'angka' },
+                    { label: '3️⃣ 3D (BB)', value: str3d, cls: 'angka' },
+                    { label: '2️⃣ 2D (BB)', value: str2d, cls: 'angka' },
+                    { label: '🎲 COLOK BEBAS', value: detail.colok_bebas || '-', cls: '' },
+                    { label: '🎲 COLOK BEBAS 2D', value: detail.colok_bebas_2d || '-', cls: '' },
+                    { label: '🐉 SHIO', value: detail.shio || '-', cls: '' },
+                    { label: '👯 TWIN', value: detail.twin || '-', cls: '' }
+                ];
+
+                let html = `<div class="sticky-note-besar">`;
+
+                items.forEach(item => {
+                    const safeValue = String(item.value).replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                    html += `
+                        <div class="note-row">
+                            <span class="note-label">${item.label}</span>
+                            <span class="note-value ${item.cls}">${safeValue}</span>
+                        </div>
+                    `;
+                });
+
+                const note = detail.note || 'Selalu Utamakan Prediksi Sendiri';
+                html += `
+                        <div class="note-note">💡 ${note}</div>
+                    </div>
+                `;
+
+                detailContent.innerHTML = html;
+            } else {
+                detailContent.innerHTML = `<div class="no-prediksi">📭 Belum ada prediksi lengkap untuk pasaran ini</div>`;
+            }
+
+            detailDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ============================================================
+        // 14. FUNGSI COPY PREDIKSI (DIPERBAIKI)
+        // ============================================================
+        function copyPrediksi() {
+            if (!lastPrediksiDetail) {
+                alert('Tidak ada prediksi untuk disalin. Klik pasaran terlebih dahulu.');
+                return;
+            }
+
+            const d = lastPrediksiDetail;
+            const str4d = d['4d'] ? d['4d'].join(' ') : '-';
+            const str3d = d['3d'] ? d['3d'].join(' ') : '-';
+            const str2d = d['2d'] ? d['2d'].join(' ') : '-';
+
+            // Format teks yang rapi sesuai sticky notes
+            const text =
+                `📊 ${lastPrediksiNama}
+${'='.repeat(40)}
+
+📅 Tanggal       : ${d.tanggal || '-'}
+🔢 BBFS          : ${d.bbfs || '-'}
+🎯 ANGKA MAIN    : ${d.angka_main || '-'}
+4️⃣ 4D (BB)      : ${str4d}
+3️⃣ 3D (BB)      : ${str3d}
+2️⃣ 2D (BB)      : ${str2d}
+🎲 COLOK BEBAS   : ${d.colok_bebas || '-'}
+🎲 COLOK BEBAS 2D: ${d.colok_bebas_2d || '-'}
+🐉 SHIO          : ${d.shio || '-'}
+👯 TWIN          : ${d.twin || '-'}
+
+💡 ${d.note || 'Selalu Utamakan Prediksi Sendiri'}`;
+
+            // Menggunakan Clipboard API dengan fallback
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    btnCopy.textContent = '✅ Tersalin!';
+                    btnCopy.classList.add('copied');
+                    setTimeout(() => {
+                        btnCopy.textContent = '📋 Copy';
+                        btnCopy.classList.remove('copied');
+                    }, 2000);
+                }).catch(() => {
+                    // Fallback jika clipboard gagal
+                    copyFallback(text);
+                });
+            } else {
+                // Fallback untuk browser yang tidak support Clipboard API
+                copyFallback(text);
+            }
+        }
+
+        // Fallback copy menggunakan textarea
+        function copyFallback(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                btnCopy.textContent = '✅ Tersalin!';
+                btnCopy.classList.add('copied');
+                setTimeout(() => {
+                    btnCopy.textContent = '📋 Copy';
+                    btnCopy.classList.remove('copied');
+                }, 2000);
+            } catch (err) {
+                alert('Gagal menyalin: ' + err);
+            }
+            document.body.removeChild(textarea);
+        }
+
+        btnCopy.addEventListener('click', copyPrediksi);
+
+        // ============================================================
+        // 15. FUNGSI CLOSE DETAIL
+        // ============================================================
+        function closeDetail() {
+            detailDiv.classList.remove('visible');
+            lastPrediksiDetail = null;
+            lastPrediksiNama = '';
+        }
+
+        btnClose.addEventListener('click', closeDetail);
+
+        // ============================================================
+        // 16. PENCARIAN
+        // ============================================================
+        function performSearch() {
+            const keyword = searchInput.value;
+            renderTabelPrediksi(keyword);
+            const filtered = semuaCatatan.filter(item =>
+                item.pasaran.toLowerCase().includes(keyword.toLowerCase().trim()) ||
+                item.prediksi.toLowerCase().includes(keyword.toLowerCase().trim())
+            );
+            totalSpan.textContent = filtered.length;
+            if (keyword.trim() !== '') {
+                resultInfo.textContent = `Menampilkan ${filtered.length} dari ${semuaCatatan.length}`;
+            } else {
+                resultInfo.textContent = '';
+            }
+            closeDetail();
+        }
+
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // ============================================================
+        // 17. TOGGLE PREDIKSI
+        // ============================================================
+        togglePrediksiBtn.addEventListener('click', function() {
+            prediksiVisible = !prediksiVisible;
+            if (prediksiVisible) {
+                prediksiWrapper.classList.add('visible');
+                this.textContent = '📋 Sembunyikan Prediksi';
+                renderTabelPrediksi(searchInput.value);
+            } else {
+                prediksiWrapper.classList.remove('visible');
+                this.textContent = '📋 Tampilkan Prediksi';
+            }
+        });
+
+        // ============================================================
+        // 18. INISIALISASI
+        // ============================================================
+        async function init() {
+            await fetchDataFromSheets();
+            updateBadgeWaktu();
+            totalSpan.textContent = marketData.length;
+            console.log('✅ Aplikasi siap.');
+        }
+        init();
+
+        // ============================================================
+        // 19. LOGIKA SCANNER
+        // ============================================================
+        trigger.addEventListener('click', () => {
+            modal.classList.add('open');
+            previewImg.style.display = 'none';
+            resultText.textContent = 'Belum ada gambar diproses';
+            resultText.className = 'text-result empty';
+            loadingIndicator.style.display = 'none';
+            currentImageFile = null;
+            fileInput.value = '';
+        });
+
+        function closeModal() {
+            modal.classList.remove('open');
+        }
+        closeBtn.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        dropArea.addEventListener('click', () => fileInput.click());
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.style.borderColor = '#f5d742';
+        });
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.style.borderColor = 'rgba(255,215,0,0.12)';
+        });
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.style.borderColor = 'rgba(255,215,0,0.12)';
+            if (e.dataTransfer.files.length) {
+                const file = e.dataTransfer.files[0];
+                if (file.type.startsWith('image/')) {
+                    handleImageFile(file);
+                } else {
+                    alert('Mohon pilih file gambar.');
+                }
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleImageFile(e.target.files[0]);
+            }
+        });
+
+        function handleImageFile(file) {
+            currentImageFile = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                previewImg.style.display = 'block';
+                resultText.textContent = 'Gambar siap diproses. Klik "Scan Ulang" untuk membaca teks.';
+                resultText.className = 'text-result';
+            };
+            reader.readAsDataURL(file);
+            performOCR(file);
+        }
+
+        async function performOCR(file) {
+            if (!file) {
+                alert('Pilih gambar terlebih dahulu.');
+                return;
+            }
+            loadingIndicator.style.display = 'block';
+            resultText.textContent = 'Memproses...';
+            resultText.className = 'text-result';
+
+            try {
+                const imageUrl = URL.createObjectURL(file);
+                const result = await Tesseract.recognize(imageUrl, 'ind+eng', {
+                    logger: (m) => {
+                        if (m.status === 'recognizing text') {}
+                    }
+                });
+                const text = result.data.text.trim();
+                if (text) {
+                    resultText.textContent = text;
+                    resultText.className = 'text-result';
+                } else {
+                    resultText.textContent = 'Tidak ada teks yang terdeteksi.';
+                    resultText.className = 'text-result empty';
+                }
+            } catch (err) {
+                console.error(err);
+                resultText.textContent = 'Gagal membaca gambar: ' + err.message;
+                resultText.className = 'text-result empty';
+            } finally {
+                loadingIndicator.style.display = 'none';
+            }
+        }
+
+        scanBtn.addEventListener('click', () => {
+            if (currentImageFile) {
+                performOCR(currentImageFile);
+            } else {
+                alert('Pilih gambar terlebih dahulu dengan mengklik area di atas.');
+            }
+        });
+
+        // ============================================================
+        // 20. ANIMASI BINTANG JATUH (Canvas)
+        // ============================================================
+        (function() {
+            const canvas = document.getElementById('stars-canvas');
+            const ctx = canvas.getContext('2d');
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            const fixedStars = [];
+            const FIXED_STAR_COUNT = 200;
+            for (let i = 0; i < FIXED_STAR_COUNT; i++) {
+                fixedStars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 1.5 + 0.3,
+                    brightness: Math.random() * 0.7 + 0.2,
+                    twinkleSpeed: Math.random() * 0.025 + 0.005,
+                    phase: Math.random() * Math.PI * 2
+                });
+            }
+
+            const shootingStars = [];
+            const MAX_SHOOTING = 8;
+            const SPAWN_RATE = 0.02;
+
+            function resetShootingStar(star) {
+                const angle = Math.random() * Math.PI * 0.7 + 0.15;
+                const speed = Math.random() * 6 + 4;
+                const spawnX = Math.random() * canvas.width * 0.9 + canvas.width * 0.05;
+                const spawnY = Math.random() * canvas.height * 0.3;
+                star.x = spawnX;
+                star.y = spawnY;
+                star.vx = Math.cos(angle) * speed;
+                star.vy = Math.sin(angle) * speed;
+                star.length = Math.random() * 70 + 30;
+                star.opacity = Math.random() * 0.7 + 0.3;
+                star.life = 1.0;
+                star.decay = Math.random() * 0.01 + 0.005;
+            }
+
+            function initShootingStars(count) {
+                for (let i = 0; i < count; i++) {
+                    const star = { x: 0, y: 0, vx: 0, vy: 0, length: 0, opacity: 0, life: 0, decay: 0 };
+                    resetShootingStar(star);
+                    star.life = Math.random() * 0.8 + 0.2;
+                    shootingStars.push(star);
+                }
+            }
+            initShootingStars(4);
+
+            function drawStars() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const time = Date.now() / 1000;
+
+                for (let s of fixedStars) {
+                    const flicker = 0.6 + 0.4 * Math.sin(time * s.twinkleSpeed + s.phase);
+                    const alpha = s.brightness * flicker;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 240, ${alpha})`;
+                    ctx.fill();
+                    if (s.radius > 1.0) {
+                        ctx.shadowColor = 'rgba(255, 235, 180, 0.15)';
+                        ctx.shadowBlur = 6;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                    }
+                }
+
+                if (shootingStars.length < MAX_SHOOTING && Math.random() < SPAWN_RATE) {
+                    const newStar = { x: 0, y: 0, vx: 0, vy: 0, length: 0, opacity: 0, life: 0, decay: 0 };
+                    resetShootingStar(newStar);
+                    newStar.life = Math.random() * 0.7 + 0.3;
+                    shootingStars.push(newStar);
+                }
+
+                for (let i = shootingStars.length - 1; i >= 0; i--) {
+                    const s = shootingStars[i];
+                    s.x += s.vx;
+                    s.y += s.vy;
+                    s.life -= s.decay;
+
+                    if (s.life <= 0 || s.x > canvas.width + 100 || s.y > canvas.height + 100 || s.x < -100 || s.y < -
+                        100) {
+                        resetShootingStar(s);
+                        s.life = Math.random() * 0.8 + 0.3;
+                        continue;
+                    }
+
+                    const currentOpacity = s.opacity * s.life;
+                    const endX = s.x - s.vx * s.length * 0.3;
+                    const endY = s.y - s.vy * s.length * 0.3;
+
+                    const gradient = ctx.createLinearGradient(s.x, s.y, endX, endY);
+                    gradient.addColorStop(0, `rgba(255, 255, 240, ${currentOpacity})`);
+                    gradient.addColorStop(0.4, `rgba(255, 210, 140, ${currentOpacity * 0.7})`);
+                    gradient.addColorStop(1, `rgba(255, 200, 100, 0)`);
+
+                    ctx.beginPath();
+                    ctx.moveTo(s.x, s.y);
+                    ctx.lineTo(endX, endY);
+                    ctx.strokeStyle = gradient;
+                    ctx.lineWidth = 1.8 + Math.random() * 0.3;
+                    ctx.shadowColor = `rgba(255, 215, 120, ${currentOpacity * 0.2})`;
+                    ctx.shadowBlur = 20;
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, 1.2 + Math.random() * 0.5, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 235, ${currentOpacity * 0.8})`;
+                    ctx.shadowColor = `rgba(255, 220, 150, ${currentOpacity * 0.15})`;
+                    ctx.shadowBlur = 14;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
+
+                requestAnimationFrame(drawStars);
+            }
+
+            drawStars();
+
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                for (let s of fixedStars) {
+                    s.x = Math.random() * canvas.width;
+                    s.y = Math.random() * canvas.height;
+                }
+                for (let s of shootingStars) {
+                    if (s.x > canvas.width || s.y > canvas.height) {
+                        resetShootingStar(s);
+                        s.life = Math.random() * 0.6 + 0.4;
+                    }
+                }
+            });
+        })();
+
+        console.log('✅ Aplikasi siap.');
+    </script>
+
+</body>
+</html>
